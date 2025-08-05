@@ -1,0 +1,11 @@
+---
+-   name: Upgrade and Maintain System
+    hosts: all
+    remote_user: root
+    tasks:
+        -   name: Update, upgrade, and clean APT packages
+            apt:
+                update_cache: yes
+                upgrade: dist
+                autoclean: yes
+                autoremove: yes
