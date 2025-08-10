@@ -1,9 +1,19 @@
-FROM jenkins/jenkins:alpine
+FROM jenkins/jenkins:jdk21
 
 USER root
 
-RUN apk add --no-cache docker-cli-compose docker-cli-buildx
+RUN apt-get update && apt-get install -y lsb-release -qqy apt-transport-https ca-certificates curl gnupg2 make gettext software-properties-common
+
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
+    https://download.docker.com/linux/debian $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" \
+    | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && apt-get install -y docker-ce-cli && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get install docker-buildx-plugin docker-compose-plugin
 
 USER jenkins
 
-RUN jenkins-plugin-cli --plugins "blueocean pipeline-github"
+RUN jenkins-plugin-cli --plugins "blueocean pipeline-github ssh-agent"
