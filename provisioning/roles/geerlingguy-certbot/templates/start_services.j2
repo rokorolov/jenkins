@@ -3,11 +3,11 @@
 
 {% for item in certbot_create_standalone_stop_services %}
 echo "starting service {{ item }}"
-{% if ansible_service_mgr == 'systemd' %}
+{% if ansible_facts.service_mgr == 'systemd' %}
 systemctl start {{ item }}
-{% elif ansible_service_mgr == 'upstart' %}
+{% elif ansible_facts.service_mgr == 'upstart' %}
 initctl start {{ item }}
-{% elif ansible_service_mgr == 'openrc' %}
+{% elif ansible_facts.service_mgr == 'openrc' %}
 rc-service {{ item }} start
 {% else %}
 service {{ item }} start
